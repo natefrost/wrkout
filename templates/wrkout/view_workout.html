@@ -1,0 +1,73 @@
+<!--
+    Expects as context:
+    result - the workout being viewed
+-->
+
+{% extends 'wrkout/view_exercise_or_workout_base.html' %}
+{% load staticfiles %}
+
+{% block specifics_block %}
+    <div class="details-likes indented">
+        {% if result in logged_in_profile.LikedWorkouts.all %}    
+            <a href="{% url 'wrkout:unlike_workout' result.Slug %}">
+                <img src="{% static 'wrkout/images/thumbs_up_filled.png' %}">
+            </a>
+        {% else %}
+            <a href="{% url 'wrkout:like_workout' result.Slug %}">
+                <img src="{% static 'wrkout/images/thumbs_up_unfilled.png' %}">
+            </a>
+        {% endif %}
+
+        {% if result.Likes >= 0 %}
+            <span class="positive-likes">{{result.Likes}}</span>
+        {% else %}
+            <span class="negative-likes">{{result.Likes}}</span>
+        {% endif %}
+
+        {% if result in logged_in_profile.DislikedWorkouts.all %}
+            <a href="{% url 'wrkout:undislike_workout' result.Slug %}">
+                <img src="{% static 'wrkout/images/thumbs_down_filled.png' %}">
+            </a>
+        {% else %}
+            <a href="{% url 'wrkout:dislike_workout' result.Slug %}">
+                <img src="{% static 'wrkout/images/thumbs_down_unfilled.png' %}">
+            </a>
+        {% endif %}
+    </div>
+
+    {% if logged_in_profile and result.CreatorID != logged_in_profile %}
+        {% if result in logged_in_profile.SavedWorkouts.all %}
+            <a href="{% url 'wrkout:unsave_workout' result.Slug %}" class="indented button-container">
+                <button>Remove from collection</button>
+            </a>
+        {% else %}
+            <a href="{% url 'wrkout:save_workout' result.Slug %}" class="indented button-container">
+                <button>Save to collection</button>
+            </a>
+        {% endif %}
+    {% elif logged_in_profile == result.CreatorID %}
+        <button class="indented important delete-button">Delete Workout</button>
+    {% endif %}
+    
+    <hr>
+    <div class="indented">
+        {{ result.Description }}
+    </div>
+    <hr>
+    <div id="specifics-exercise-list"  class="indented">
+        <ul>
+            {% for set in result.Sets.all %}
+                <li>
+                    {% if set.ExerciseID %}
+                        <a href="{% url 'wrkout:show_exercise' set.ExerciseID.Slug %}">{{ set.ExerciseID.Name }}</a> x{{set.NoOfReps}}
+                    {% else %}
+                        <a href="{% url 'wrkout:show_exercise' 'deleted-exercise' %}">[deleted-exercise]</a>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}
+
+
+

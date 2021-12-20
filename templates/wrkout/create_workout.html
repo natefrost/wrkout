@@ -1,0 +1,58 @@
+<!--
+    Expects as context:
+    workout_form
+    exercises - list of all exercises, sorted alphabetically
+-->
+
+{% extends 'wrkout/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+    Create Workout
+{% endblock %}
+
+{% block js_block %}
+    <script src="{% static 'wrkout/js/create_workout.js' %}"></script>
+{% endblock %}
+
+{% block content_block %}
+    <form id="create-workout-form" method="POST" action="{% url 'wrkout:create_workout' %}" enctype="multipart/form-data">
+        <h1>Create a New Workout:</h1>
+        {% csrf_token %}
+        {{ workout_form.as_p }}
+
+        <hr>
+
+        <div id="add-exercises-block">
+            <div id="selected-exercises">
+                <b>Included Exercises</b>
+                <div id="selected-exercise-list">
+                    
+                </div>
+            </div>
+    
+            <hr>
+        
+            <div id="exercise-selector">
+                <b>Add Exercise</b>
+                <input id="exercise-selector-search" type="text" placeholder="Filter Exercises">
+                <div id="exercise-selector-list">
+                    {% for exercise in exercises %}
+                        <div class="exercise-selector-row">
+                            <a href="{% url 'wrkout:show_exercise' exercise.Slug %}">{{ exercise.Name }}</a>
+                            <img class="add-exercise-button clickable" 
+                                 src="{% static 'wrkout/images/plus.png' %}"
+                                 data-trash-src="{% static 'wrkout/images/trash.png' %}"
+                                 data-exercise-slug="{{ exercise.Slug }}"
+                                 data-exercise-href="{% url 'wrkout:show_exercise' exercise.Slug %}"
+                                 data-exercise-name="{{ exercise.Name }}">
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+
+        <input id="create-workout-submit" type="submit" name="submit" value="Create Workout">        
+    </form>
+{% endblock %}

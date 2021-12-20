@@ -1,0 +1,36 @@
+<!--
+    expects as context:
+    just_registered - whether or not this page was shown just after registering
+    error - any errors that occurred when trying to log in
+-->
+{% extends 'wrkout/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+    Log In
+{% endblock %}
+
+{% block content_block %}
+    {% if just_registered %}
+        <p id="registered-successfully">
+            Account registered succesfully, you can log in below:
+        </p>
+    {% endif %}
+
+    <form id="login-form" method="POST" action="{{ request.get_full_path }}">
+        {% csrf_token %}
+        <h1>Log In:</h1>
+        {% if error %}
+            <p class="errorlist">{{ error }}</p>
+        {% endif %}
+        <p>
+            <label for="id_username">Username:</label>
+            <input id="id_username" type="text" name="username" maxlength="150" required>
+        </p>
+        <p>
+            <label for="id_password">Password:</label>
+            <input id="id_password" type="password" name="password" maxlength="150" required>
+        </p>
+        <input type="submit" value="Log In">
+    </form>
+{% endblock %}

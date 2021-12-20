@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+
+<html>
+    <head>
+        <link rel="stylesheet" href="{% static 'wrkout/style.css' %}" />
+        <title>
+            Wrkout - 
+            {% block title_block %}
+                Please override this
+            {% endblock %}
+        </title>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        {% block js_block %}
+        {% endblock %}
+
+    </head>
+
+    <body>
+        <div id="header">
+            {% block header_block %}
+
+                <a href="{% url 'wrkout:home' %}">
+                    <img id="logo" src="{% static 'wrkout/images/logo.png' %}">
+                </a>
+                
+                <form id="search-form" method="get" action="{% url 'wrkout:search' %}">
+                    <input id="search-bar" type="text" name="search-key" placeholder="Search for exercises or workouts" />
+                    <!-- <button id="search-button" type="submit">
+                        <img src="{% static 'wrkout/images/search_icon.png' %}" />
+                    </button> -->
+                    <input id="search-button" type="image" src="{% static 'wrkout/images/search_icon.png' %}" alt="Submit" />
+                </form>
+
+
+                {% if user.is_authenticated %}
+                    <a href="{% url 'wrkout:logout' %}">Log Out</a>
+                    
+                    <a id="profile-pic" href="{% url 'wrkout:profile' logged_in_profile.Slug %}">
+                        {% if logged_in_profile.ProfilePicture %}
+                            <img src="{{ logged_in_profile.ProfilePicture.url }}" />
+                        {% else %}
+                            <img src="{% static 'wrkout/images/default_pfp.png' %}" />
+                        {% endif %}
+                    </a>
+                {% else %}
+                    <a href="{% url 'wrkout:login' %}">Log In</a>
+                    <a href="{% url 'wrkout:register' %}">Register</a>
+                {% endif %}
+            {% endblock %}
+        </div>
+
+        <div id="sidebar">
+            {% url 'wrkout:workouts_popular' as workouts_popular %}
+            {% url 'wrkout:workouts_new' as workouts_new %}
+            {% url 'wrkout:workouts_difficulty' as workouts_difficulty %}
+            {% url 'wrkout:exercises_popular' as exercises_popular %}
+            {% url 'wrkout:exercises_new' as exercises_new %}
+            {% url 'wrkout:exercises_difficulty' as exercises_difficulty %}
+            <h2>Browse By:</h2>
+            <a  {% if request.path == workouts_popular %} class="selected" {% else %} class="unselected" {% endif %} 
+                href="{{ workouts_popular }}">Popular Workouts</a> 
+            <a  {% if request.path == workouts_new %} class="selected" {% else %} class="unselected" {% endif %} 
+                href="{{ workouts_new }}">New Workouts</a> 
+            <a  {% if request.path == workouts_difficulty %} class="selected" {% else %} class="unselected" {% endif %} 
+                href="{{ workouts_difficulty }}">Difficult Workouts</a>
+            <a  {% if request.path == exercises_popular %} class="selected" {% else %} class="unselected" {% endif %} 
+                href="{{ exercises_popular }}">Popular Exercises</a> 
+            <a  {% if request.path == exercises_new %} class="selected" {% else %} class="unselected" {% endif %} 
+                href="{{ exercises_new }}">New Exercises</a>
+            <a  {% if request.path == exercises_difficulty %} class="selected" {% else %} class="unselected" {% endif %} 
+                href="{{ exercises_difficulty }}">Difficult Exercises</a>
+            
+            {% if user.is_authenticated or True %}
+                {% url 'wrkout:create_workout' as create_workout %}
+                {% url 'wrkout:create_exercise' as create_exercise %}
+                <h2>Create New:</h2>
+                <a  {% if request.path == create_workout %} class="selected" {% else %} class="unselected" {% endif %} 
+                    href="{{ create_workout }}">Workout</a>
+                <a  {% if request.path == create_exercise %} class="selected" {% else %} class="unselected" {% endif %} 
+                    href="{{ create_exercise }}">Exercise</a>
+            {% endif %}
+        </div>
+
+        <div id="content">
+            {% block content_block %}
+                Content!
+            {% endblock %}
+        </div>
+    </body>
+</html>
